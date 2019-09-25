@@ -1,0 +1,80 @@
+import os
+import sys
+
+os.system("cls")
+
+#Lectura de archivos
+with open("texto1.txt", "r") as archivo:
+    lines = archivo.readlines() 
+    start = 2 
+    end = len(lines)-start # end 
+    ID = [None] * end #Letra  N° ids
+    anc = [None] * end #ancho 
+    alt = [None] * end #alto
+    cant = [None] * end #cantidad por cada plancha
+    
+    m = lines[0].split()  #captura Ancho y Alto
+    n = lines[1].split() #Captura la cantidad de planchas
+    
+    contadorIntroducidos = 0 
+    valider = 0 #validador si es que sobrepasa
+    for start in range(end): 
+        x = lines[start+2].split() #comienza desde las planchas
+        print('x{} -->'.format(start+1) + str(x))
+        contadorIntroducidos +=  int(x[3])
+        print(contadorIntroducidos)
+        
+        if contadorIntroducidos > int(n[0]):
+            
+            print("La cantidad de planchas introducidas no coincide con la cantidad definida")
+            valider = 0
+            break
+        else:
+            valider = 1
+            ID[start] = x[0] #Guarda la ID
+            anc[start] = int(x[1]) #Guarda el ancho
+            alt[start] = int(x[2]) #Guarda el alto
+            cant[start] = int(x[3]) #Guarda la cantidad de cada plancha
+
+if valider == 0 or contadorIntroducidos != int(n[0]):
+    print("Saliendo de programa")
+    sys.exit()
+    
+    
+ancho = int(m[0])
+alto = int(m[1])
+cantidad = int(n[0])
+anchoCajas = anc
+altoCajas = alt
+
+sumatoriaAreaCajas = 0
+areaTotal = ancho * alto
+
+for start in range(end):
+    areaCajas = anchoCajas[start] * altoCajas[start]
+    sumatoriaAreaCajas += areaCajas
+    
+print(areaTotal)
+print(sumatoriaAreaCajas)
+
+desperdicio = (sumatoriaAreaCajas * 100) / areaTotal #sera en porcentaje 
+
+print("El desperdicio fue : {}%".format(100 - desperdicio))
+
+
+def datos(): #Juntamos los datos
+    listaDatos = [None] * contadorIntroducidos
+    for start in range(end):
+        listaDatos[start]=[anc[start],alt[start]]
+        
+    return listaDatos
+
+print(datos())
+
+
+def verDatos():
+    print("AnchoPlancha:"+str(ancho),"AltoPlancha:"+str(alto))
+    for start in range(end):
+        print("ID("+ID[start]+")","\tancho:"+ str(anc[start]),"\talto:"+str(alt[start]))
+
+verDatos()
