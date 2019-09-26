@@ -1,99 +1,220 @@
 from collections import namedtuple
 import os
+import sys
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from random import random
+
 
 os.system("cls")
-I=[]
 
-with open("texto1.txt", "r") as archivo:
-    lines = archivo.readlines()
-    start=2
-    end=len(lines)-2
-    ID=[None]*end
-    anc=[int]*end
-    alt=[int]*end
-    for start in range(end):
-        m =lines[0].split()
-       
-        n= lines[1].split()
-        x= lines[start+2].split()
+#Lectura de archivos
+with open("texto2.txt", "r") as archivo:
+    lines = archivo.readlines() 
+    start = 2 
+    end = len(lines)-start # end 
+    print(end)
+    ID = [None] * end #Letra  N° ids
+    anc = [None] * end #ancho 
+    alt = [None] * end #alto
+    cant = [None] * end #cantidad por cada plancha
+    
+    m = lines[0].split()  #captura Ancho y Alto
+    n = lines[1].split() #Captura la cantidad de planchas
+    
+    contadorIntroducidos = 0 
+    valider = 0 #validador si es que sobrepasa
+    
+    for start in range(end): 
+        x = lines[start+2].split() #comienza desde las planchas
+        #print('x{} -->'.format(start+1) + str(x))
+        contadorIntroducidos +=  int(x[3])
+        
+        if contadorIntroducidos > int(n[0]):
+            
+            print("La cantidad de planchas introducidas no coincide con la cantidad definida")
+            valider = 0
+            break
+        else:
+            valider = 1
+            ID[start] = x[0] #Guarda la ID
+            anc[start] = int(x[1]) #Guarda el ancho
+            alt[start] = int(x[2]) #Guarda el alto
+            cant[start] = int(x[3]) #Guarda la cantidad de cada plancha
 
-        ID[start]=x[0]
-        anc[start]=int(x[1])
-        alt[start]=int(x[2])
-ancho=int(m[0])  
-alto=int(m[1])
-cantidad=int(n[0])
-anchoCajas=anc
-altoCajas=alt
+if valider == 0 or contadorIntroducidos != int(n[0]):
+    print("Saliendo de programa")
+    sys.exit()
+    
+
+
+ancho = int(m[0])
+alto = int(m[1])
+cantidad = int(n[0])
+anchoCajas = anc
+altoCajas = alt
+
+sumatoriaAreaCajas = 0
+areaTotal = ancho * alto
 for start in range(end):
-    areaCajas=anchoCajas[start]*altoCajas[start]
-    sumatoriaAreaCajas=0
-    sumatoriaAreaCajas+=areaCajas
-    print (sumatoriaAreaCajas)
+    for i in range(int(cant[start])):
+        areaCajas = anchoCajas[start] * altoCajas[start]
+        sumatoriaAreaCajas += areaCajas
 
+print("Area total", areaTotal)
+print("Area utilizada",sumatoriaAreaCajas)
 
-def datos():
-    listaDatos=[None]*end
+desperdicio = (sumatoriaAreaCajas * 100) / areaTotal #sera en porcentaje 
+
+print("El desperdicio fue : {}%".format(100 - desperdicio))
+
+def datos(): #Juntamos los datos
+    listaDatos = [None] * contadorIntroducidos
+    contador = 0
     for start in range(end):
-        listaDatos[start]=[anc[start],alt[start]]
+        for i in range(int(cant[start])):
+            listaDatos[contador]=[anc[start],alt[start]]
+            contador += 1
     return listaDatos
 
+#Transformando ID
+newID = [] 
+for i in range(end):
+    getter = int(cant[i])
+    for j in range(getter):
+        newID.append(ID[i])
+'''
 def verDatos():
     print("AnchoPlancha:"+str(ancho),"AltoPlancha:"+str(alto))
     for start in range(end):
         print("ID("+ID[start]+")","\tancho:"+ str(anc[start]),"\talto:"+str(alt[start]))
 
 verDatos()
-from collections import namedtuple
-import sys
+'''
+
 ide='ID'
-caja = namedtuple('ID', [ide,'x', 'y', 'w', 'h'])
+caja = namedtuple('ID', [ide,'x', 'y', 'w', 'h']) #Nuestro conjunto de rectángulos
 
 def ordenarCajas(ancho, alto, cajas): 
-    n = [None] * cantidad 
+    
+    n = [None] *len(cajas)
     aux = cajas
-    print (aux)
-    for idx, r in enumerate(aux):
-        if r[0] > r[1]:
-            aux[idx][0], aux[idx][1] = aux[idx][1], aux[idx][0]
-    ordenarIndices = sorted(range(len(aux)), key=lambda m: -aux[m][0])
-    print(aux)
-    print (ordenarIndices)
+    lon=len(cajas)
+    aux3=[]
+    for indice, par in enumerate(aux): #giro 90 
+        if par[0] > par[1]: #se trata de ordenarlo mediante el ancho, por eso se busca esta forma
+            aux[indice][0], aux[indice][1] = aux[indice][1], aux[indice][0]
+    #Devuelve índices ordenados mediante su ancho
+    ordenarIndices = sorted(range(len(aux)), key=lambda m: -aux[m][0]) 
     x, y, w, h, H = 0, 0, 0, 0, 0
+    
     while ordenarIndices:
-        idx = ordenarIndices.pop(0)
-        print(idx)
-        dato = aux[idx]
-        print (dato)
+        indice = ordenarIndices.pop(0) #Sacamos de la lista de prioridad
+       
+        dato = aux[indice] #Obtiene primer valor de lista 
+    #Si el ancho de la nueva placa, es mayor a la base, tener el rectángulo 
+    #al revés, 
 
-        print (")))))",dato[1])
-        
         if dato[1] > ancho or dato[1] > alto:
-            n[idx] = caja(ID[idx], x, y, dato[0], dato[1])
-            print ("*****",n[idx])
-            x, y, w, h, H = dato[0], H, ancho - dato[0], dato[1], H + dato[1] 
-
-        else: 
-            n[idx] = caja(ID[idx],x, y, dato[1], dato[0]) 
-            x, y, w, h, H = dato[1], H, ancho - dato[1], dato[0], H + dato[0]      
+        
+            n[indice] = caja(newID[indice], x, y, dato[0], dato[1])
+            x, y, w, h, H = dato[0], H, ancho - dato[0], dato[1], H + dato[1]    
+        else:
+            n[indice] = caja(newID[indice],x, y, dato[1], dato[0])
+            x, y, w, h, H = dato[1], H, ancho - dato[1], dato[0], H + dato[0]
+        
+        #if noHasEspacio()==True:
+        #ordenarCajas(ancho,alto,aux2)   
+       
         backtracking(x, y, w, h, 1, aux, ordenarIndices, n)
+        if verificacion(x,y,w,h)==True:
+            aux3.append(aux[indice])
+            print (aux3)
+            J(aux3)
+                
         x,y=0,H
+    
+    
     return n
+
+def verificacion(x,y,w,h):
+    if x>ancho or y>alto or w+x>ancho or h+y>alto :
+        return True
 
 def backtracking(posX, posY, ancho, alto, D, R, indices, resultado):
     
     prioridad = 6
     for idx in indices:  
-        for j in range(0, D + 1): 
+
+        for j in range(0,2): 
+    
           
-            if prioridad > 1 and R[idx][(0 + j) % 2] == ancho and R[idx][(1 + j) % 2] == alto:
+            if prioridad > 1 and R[idx][j % 2] == ancho and R[idx][(1 + j) % 2] == alto:
                 prioridad, orientacion, mejor = 1, j, idx              
                 break
-            elif prioridad > 2 and R[idx][(0 + j) % 2] == ancho and R[idx][(1 + j) % 2] < alto:
+            elif prioridad > 2 and R[idx][j % 2] == ancho and R[idx][(1 + j) % 2] < alto:
                 prioridad, orientacion, mejor = 2, j, idx 
-            elif prioridad > 3 and R[idx][(0 + j) % 2] < ancho and R[idx][(1 + j) % 2] == alto:
+            elif prioridad > 3 and R[idx][j % 2] < ancho and R[idx][(1 + j) % 2] == alto:
                 prioridad, orientacion, mejor = 3, j, idx 
-            elif prioridad > 4 and R[idx][(0 + j) % 2] < ancho and R[idx][(1 + j) % 2] < alto:
+            elif prioridad > 4 and R[idx][j % 2] < ancho and R[idx][(1 + j) % 2] < alto:
                 prioridad, orientacion, mejor = 4, j, idx
             elif prioridad > 5: 
                 prioridad, orientacion, mejor = 5, j, idx
+ 
+    if prioridad < 5:
+     
+        if orientacion == 0:
+            posicion1, posicion2 = R[mejor][0], R[mejor][1] 
+        else:
+            posicion1, posicion2 = R[mejor][1], R[mejor][0]
+        
+        resultado[mejor] = caja(newID[mejor],posX, posY, posicion1, posicion2) 
+        indices.remove(mejor)
+        if prioridad == 2:
+            backtracking(posX, posY + posicion2, ancho, alto - posicion2, D, R, indices, resultado)
+        elif prioridad == 3:
+            backtracking(posX + posicion1, posY, ancho - posicion1, alto, D, R, indices, resultado)
+        elif prioridad == 4: 
+            anchoMin = sys.maxsize 
+            altoMin = sys.maxsize 
+            for idx in indices:
+                anchoMin = min(anchoMin, R[idx][0])
+                altoMin = min(altoMin, R[idx][1])
+           
+            anchoMin = min(altoMin, anchoMin)
+            altoMin = anchoMin
+            if ancho - posicion1 < anchoMin:
+                backtracking(posX, posY + posicion2, ancho, alto - posicion2, D, R, indices, resultado)
+            elif alto - posicion2 < altoMin:
+                backtracking(posX + posicion1, posY, ancho - posicion1, alto, D, R, indices, resultado)
+            elif posicion1 < anchoMin:
+                backtracking(posX + posicion1, posY, ancho - posicion1, posicion2, D, R, indices, resultado)
+                backtracking(posX, posY + posicion2, ancho, alto - posicion2, D, R, indices, resultado)
+            else:
+                backtracking(posX, posY + posicion2, posicion1, alto - posicion2, D, R, indices, resultado)
+                backtracking(posX + posicion1, posY, ancho - posicion1, alto, D, R, indices, resultado)
+
+def graficos(width, height, rectangles):
+    figura = plt.figure()
+    p = figura.add_subplot(1, 1, 1)
+    p.add_patch(patches.Rectangle((0, 0),width,height,hatch='x',fill=False,))
+    for idx, r in enumerate(rectangles): 
+        p.add_patch(patches.Rectangle((r.x, r.y),r.w,r.h,color=(random(), random(), random()),))
+        p.text(r.x + 0.5 * r.w, r.y + 0.5 * r.h, newID[idx])
+    p.set_xlim(0, width)
+    p.set_ylim(0, height)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.show()
+
+def J(datos):
+    boxes=datos
+    cajas = ordenarCajas(ancho, alto, boxes)
+    print(cajas)
+    graficos(ancho,alto,cajas)
+
+def main():
+    #area=alto*ancho
+    J(datos())
+
+if __name__ == "__main__":
+    main()
