@@ -8,26 +8,25 @@ from random import random
 
 os.system("cls")
 
-#Lectura de archivos
-with open("texto2.txt", "r") as archivo:
+
+with open("15D.txt", "r") as archivo:
     lines = archivo.readlines() 
     start = 2 
-    end = len(lines)-start # end 
+    end = len(lines)-start 
     print(end)
-    ID = [None] * end #Letra  N° ids
-    anc = [None] * end #ancho 
-    alt = [None] * end #alto
-    cant = [None] * end #cantidad por cada plancha
+    ID = [None] * end
+    anc = [None] * end 
+    alt = [None] * end 
+    cant = [None] * end 
     
-    m = lines[0].split()  #captura Ancho y Alto
-    n = lines[1].split() #Captura la cantidad de planchas
+    m = lines[0].split()  
+    n = lines[1].split()
     
     contadorIntroducidos = 0 
-    valider = 0 #validador si es que sobrepasa
+    valider = 0 
     
     for start in range(end): 
-        x = lines[start+2].split() #comienza desde las planchas
-        #print('x{} -->'.format(start+1) + str(x))
+        x = lines[start+2].split() 
         contadorIntroducidos +=  int(x[3])
         
         if contadorIntroducidos > int(n[0]):
@@ -37,10 +36,10 @@ with open("texto2.txt", "r") as archivo:
             break
         else:
             valider = 1
-            ID[start] = x[0] #Guarda la ID
-            anc[start] = int(x[1]) #Guarda el ancho
-            alt[start] = int(x[2]) #Guarda el alto
-            cant[start] = int(x[3]) #Guarda la cantidad de cada plancha
+            ID[start] = x[0] 
+            anc[start] = int(x[1]) 
+            alt[start] = int(x[2]) 
+            cant[start] = int(x[3]) 
 
 if valider == 0 or contadorIntroducidos != int(n[0]):
     print("Saliendo de programa")
@@ -53,6 +52,18 @@ alto = int(m[1])
 cantidad = int(n[0])
 anchoCajas = anc
 altoCajas = alt
+def datos():
+    listaDatos=[None]*end
+    for start in range(end):
+        listaDatos[start]=[anc[start],alt[start]]
+    return listaDatos
+
+def verDatos():
+    print("AnchoPlancha:"+str(ancho),"AltoPlancha:"+str(alto))
+    for start in range(end):
+        print("ID("+ID[start]+")","\tancho:"+ str(anc[start]),"\talto:"+str(alt[start]))
+
+verDatos()
 
 sumatoriaAreaCajas = 0
 areaTotal = ancho * alto
@@ -64,11 +75,11 @@ for start in range(end):
 print("Area total", areaTotal)
 print("Area utilizada",sumatoriaAreaCajas)
 
-desperdicio = (sumatoriaAreaCajas * 100) / areaTotal #sera en porcentaje 
+desperdicio = (sumatoriaAreaCajas * 100) / areaTotal 
 
 print("El desperdicio fue : {}%".format(100 - desperdicio))
 
-def datos(): #Juntamos los datos
+def datos(): 
     listaDatos = [None] * contadorIntroducidos
     contador = 0
     for start in range(end):
@@ -77,7 +88,6 @@ def datos(): #Juntamos los datos
             contador += 1
     return listaDatos
 
-#Transformando ID
 newID = [] 
 for i in range(end):
     getter = int(cant[i])
@@ -94,26 +104,30 @@ verDatos()
 
 ide='ID'
 caja = namedtuple('ID', [ide,'x', 'y', 'w', 'h']) #Nuestro conjunto de rectángulos
-
+aux3=[]
 def ordenarCajas(ancho, alto, cajas): 
     
     n = [None] *len(cajas)
     aux = cajas
     lon=len(cajas)
     aux3=[]
-    for indice, par in enumerate(aux): #giro 90 
-        if par[0] > par[1]: #se trata de ordenarlo mediante el ancho, por eso se busca esta forma
+    for indice, par in enumerate(aux): 
+        if par[0] > par[1]:
             aux[indice][0], aux[indice][1] = aux[indice][1], aux[indice][0]
-    #Devuelve índices ordenados mediante su ancho
+  
     ordenarIndices = sorted(range(len(aux)), key=lambda m: -aux[m][0]) 
+ 
+    aux2=[None]*len(cajas)
+  
+    for i in range(lon):
+        aux2[i]=aux[ordenarIndices[i]]
     x, y, w, h, H = 0, 0, 0, 0, 0
     
     while ordenarIndices:
-        indice = ordenarIndices.pop(0) #Sacamos de la lista de prioridad
+        indice = ordenarIndices.pop(0) 
        
-        dato = aux[indice] #Obtiene primer valor de lista 
-    #Si el ancho de la nueva placa, es mayor a la base, tener el rectángulo 
-    #al revés, 
+        dato = aux[indice] 
+        aux2.pop(0)
 
         if dato[1] > ancho or dato[1] > alto:
         
@@ -122,15 +136,10 @@ def ordenarCajas(ancho, alto, cajas):
         else:
             n[indice] = caja(newID[indice],x, y, dato[1], dato[0])
             x, y, w, h, H = dato[1], H, ancho - dato[1], dato[0], H + dato[0]
-        
-        #if noHasEspacio()==True:
-        #ordenarCajas(ancho,alto,aux2)   
-       
         backtracking(x, y, w, h, 1, aux, ordenarIndices, n)
         if verificacion(x,y,w,h)==True:
-            aux3.append(aux[indice])
-            print (aux3)
-            J(aux3)
+           aux3.append(aux[indice])
+           J(aux3)
                 
         x,y=0,H
     
@@ -160,7 +169,6 @@ def backtracking(posX, posY, ancho, alto, D, R, indices, resultado):
                 prioridad, orientacion, mejor = 4, j, idx
             elif prioridad > 5: 
                 prioridad, orientacion, mejor = 5, j, idx
- 
     if prioridad < 5:
      
         if orientacion == 0:
@@ -168,7 +176,7 @@ def backtracking(posX, posY, ancho, alto, D, R, indices, resultado):
         else:
             posicion1, posicion2 = R[mejor][1], R[mejor][0]
         
-        resultado[mejor] = caja(newID[mejor],posX, posY, posicion1, posicion2) 
+        resultado[mejor] = caja(ID[mejor],posX, posY, posicion1, posicion2) 
         indices.remove(mejor)
         if prioridad == 2:
             backtracking(posX, posY + posicion2, ancho, alto - posicion2, D, R, indices, resultado)
@@ -192,7 +200,7 @@ def backtracking(posX, posY, ancho, alto, D, R, indices, resultado):
                 backtracking(posX, posY + posicion2, ancho, alto - posicion2, D, R, indices, resultado)
             else:
                 backtracking(posX, posY + posicion2, posicion1, alto - posicion2, D, R, indices, resultado)
-                backtracking(posX + posicion1, posY, ancho - posicion1, alto, D, R, indices, resultado)
+                backtracking(posX + posicion1, posY, ancho - posicion1, alto, D, R, indices, resultado) 
 
 def graficos(width, height, rectangles):
     figura = plt.figure()
@@ -200,7 +208,7 @@ def graficos(width, height, rectangles):
     p.add_patch(patches.Rectangle((0, 0),width,height,hatch='x',fill=False,))
     for idx, r in enumerate(rectangles): 
         p.add_patch(patches.Rectangle((r.x, r.y),r.w,r.h,color=(random(), random(), random()),))
-        p.text(r.x + 0.5 * r.w, r.y + 0.5 * r.h, newID[idx])
+        #p.text(r.x + 0.5 * r.w, r.y + 0.5 * r.h, newID[idx])
     p.set_xlim(0, width)
     p.set_ylim(0, height)
     plt.gca().set_aspect('equal', adjustable='box')
@@ -213,8 +221,8 @@ def J(datos):
     graficos(ancho,alto,cajas)
 
 def main():
-    #area=alto*ancho
     J(datos())
+    J(aux3)
 
 if __name__ == "__main__":
     main()
