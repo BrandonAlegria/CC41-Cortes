@@ -1,0 +1,54 @@
+
+import random, sys
+
+
+nRandom = ""
+cantLetras = 5
+for _ in range(5):
+    strTemp = str(chr(random.randint(65, 91)))
+    nRandom = nRandom + strTemp
+
+initX = random.randint(700,800)
+initY = random.randint(700,800)
+
+
+coordenadas = str(initX) + " " + str(initY)
+
+print(coordenadas)
+
+areaTotal = initX * initY
+areaSuma = 0
+chInit = 65
+
+print(chr(chInit))
+
+totalCant = random.randint(5, 15)
+
+print(totalCant)
+coordenadas = coordenadas + "\n" + str(totalCant) + "\n"
+contadorInterno = 0
+
+for i in range(totalCant):
+    temp1 = random.randint(100, 300)
+    temp2 = random.randint(100, 200)
+    print(temp1, temp2)
+    cantidad = random.randint(1, 2)
+    contadorInterno += cantidad
+    if contadorInterno <= totalCant:
+        areaTemp = temp1 * temp2 * cantidad
+        if areaTemp >= areaTotal:
+            print("Una de las tablas creadas ha sido más grande que la plancha")
+            sys.exit()
+        areaSuma += areaTemp
+        if areaSuma != areaTotal:
+            streng = str(chr(chInit + i)) + " " + str(temp1) + " " + str(temp2) + " "  + str(cantidad) + "\n"
+            coordenadas += streng
+
+
+file = open("./" + nRandom + ".txt", "w")
+print("Archivo creado ---> " + nRandom + ".txt")
+try:
+    file.write(coordenadas)
+except ValueError:
+    print("Error")
+file.close()
